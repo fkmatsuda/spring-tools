@@ -46,7 +46,7 @@ public class SqlExecutorProviderTest {
     @Test()
     public void testFailedParameter() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
-        sqlExecutorProvider.forSql("CREATE TABLE test (id INTEGER);").executeDDL();
+        sqlExecutorProvider.forSql("CREATE TABLE test2 (id INTEGER);").executeDDL();
         SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test2 (id) VALUES (:id)");
         RequiredValueException e = assertThrows(RequiredValueException.class, 
         () -> insertQuery.update());
@@ -56,7 +56,7 @@ public class SqlExecutorProviderTest {
     @Test()
     public void testCountInvalidQuery() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
-        SqlExecutor executor = sqlExecutorProvider.forSql("CREATE TABLE test (id INTEGER);");
+        SqlExecutor executor = sqlExecutorProvider.forSql("CREATE TABLE test3 (id INTEGER);");
         InvalidArgumentException e = assertThrows(InvalidArgumentException.class, 
         () -> executor.count());
         assertEquals("Cannot count current query result", e.getMessage());
