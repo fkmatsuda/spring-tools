@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -128,6 +129,14 @@ public class SqlExecutorProviderTest {
         SqlExecutor executor = sqlExecutorProvider.forSql("select 1 = 1");
         Boolean b = executor.queryForBoolean();
         assertTrue(b);
+    }
+
+    @Test()
+    void testQueryForBigDecimal() throws SqlException, InvalidArgumentException {
+        assertNotNull(sqlExecutorProvider);
+        SqlExecutor executor = sqlExecutorProvider.forSql("select 1.1");
+        BigDecimal b = executor.queryForBigDecimal();
+        assertEquals(1.1, b.doubleValue(), 0.00001);
     }
 
 }
