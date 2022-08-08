@@ -3,6 +3,7 @@ package dev.fkmatsuda.spring.jdbc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -83,6 +84,10 @@ public class SqlExecutorProviderTest {
         executor.setParameter("id_limit", 4);
         Long cnt = executor.count();
         assertEquals(4, cnt.intValue());
+
+        List<Long> ids = executor.queryForLongList();
+
+        assertTrue(ids.containsAll(List.of(0L, 1L, 2L, 3L)));
 
     }
 
