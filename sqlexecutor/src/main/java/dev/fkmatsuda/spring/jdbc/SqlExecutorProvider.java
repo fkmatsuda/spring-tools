@@ -24,6 +24,9 @@ package dev.fkmatsuda.spring.jdbc;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -52,6 +55,7 @@ public class SqlExecutorProvider {
         private final String sql;
         private final NamedParameterJdbcTemplate jdbcTemplate;
         private final SqlExecutorProvider provider;
+        private final DataSource dataSource;
 
         private MapSqlParameterSource parameters = null;
         
@@ -86,6 +90,23 @@ public class SqlExecutorProvider {
             
             this.jdbcTemplate.update(sql, parameters);
         }
+
+        public void executeDDL() throws SqlException {
+            
+            try (Connection conn = this.dataSource.getConnection()) {
+                conn.setAutoCommit(true);
+                try(Statement st = conn.createStatement()) {
+                    String[] ddlCommands = sql.split(";");
+                    for (String ddlCommand : ddlCommands) {
+                        if (ddlCommand.trim().length() > 0) {
+                            st.execute(ddlCommand);
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                throw new SqlException(e);
+            }
+        }
                 
         private void checkParameters() throws RequiredValueException {
             
@@ -100,6 +121,7 @@ public class SqlExecutorProvider {
             this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
             this.sql = sql;
             this.provider = provider;
+            this.dataSource = dataSource;
         }
 
         public String queryForString() {

@@ -39,10 +39,25 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <spring.version>5.3.22</spring.version>
+        <lombok.version>1.18.24</lombok.version>
+        <hsqldb.version>2.7.0</hsqldb.version>
+        <junit.version>5.9.0</junit.version>
+        <flyway.version>9.1.2</flyway.version>
+        <maven-deploy.version>3.0.0</maven-deploy.version>
+        <nexus-staging.version>1.6.13</nexus-staging.version>
+        <log4j.version>2.18.0</log4j.version>
+        <sure-fire.version>3.0.0-M7</sure-fire.version>
+        <maven-compiler.version>3.10.1</maven-compiler.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -55,11 +70,41 @@
                 <artifactId>spring-jdbc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+            <!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
             <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.24</version>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.hsqldb/hsqldb -->
+            <dependency>
+                <groupId>org.hsqldb</groupId>
+                <artifactId>hsqldb</artifactId>
+                <version>${hsqldb.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
 
             <!-- project dependencies -->
@@ -73,6 +118,32 @@
                 <artifactId>commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <!-- Plugins -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin -->
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
+            <dependency>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${sure-fire.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -81,4 +152,56 @@
         <module>sqlexecutor</module>
     </modules>
 
+    <distributionManagement>
+        <repository>
+            <id>fkmatsuda.dev-oss</id>
+            <name>fkmatsuda OSS Repository</name>
+            <url>http://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss/</url>
+        </repository>
+    </distributionManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <serverId>fkmatsuda.dev-oss</serverId>
+                    <nexusUrl>http://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss/</nexusUrl>
+                    <skipStaging>true</skipStaging>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${sure-fire.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
