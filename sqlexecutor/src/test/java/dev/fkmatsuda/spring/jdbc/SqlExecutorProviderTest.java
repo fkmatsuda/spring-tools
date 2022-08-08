@@ -104,7 +104,7 @@ public class SqlExecutorProviderTest {
     @Test()
     public void testQueryForString() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
-        sqlExecutorProvider.forSql("CREATE TABLE test5 (id INTEGER, str text);").executeDDL();
+        sqlExecutorProvider.forSql("CREATE TABLE test5 (id INTEGER, str varchar);").executeDDL();
         SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test5 (id) VALUES (:id, :str)");
         for (int i = 0; i < 16; i++) {
             insertQuery.setParameter("id", i).setParameter("str", String.format("str: %d", i)).update();
