@@ -25,7 +25,7 @@ public class SqlExecutorProviderTest {
     private SqlExecutorProvider sqlExecutorProvider;
 
     @Test
-    public void testValidQuery() throws SqlException, InvalidArgumentException {
+    void testValidQuery() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
         sqlExecutorProvider.forSql("CREATE TABLE test (id INTEGER);").executeDDL();
         SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test (id) VALUES (:id)");
@@ -45,7 +45,7 @@ public class SqlExecutorProviderTest {
     }
 
     @Test()
-    public void testFailedParameter() throws SqlException, InvalidArgumentException {
+    void testFailedParameter() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
         sqlExecutorProvider.forSql("CREATE TABLE test2 (id INTEGER);").executeDDL();
         SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test2 (id) VALUES (:id)");
@@ -55,7 +55,7 @@ public class SqlExecutorProviderTest {
     }
 
     @Test()
-    public void testCountInvalidQuery() throws SqlException, InvalidArgumentException {
+    void testCountInvalidQuery() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
         SqlExecutor executor = sqlExecutorProvider.forSql("CREATE TABLE test3 (id INTEGER);");
         InvalidArgumentException e = assertThrows(InvalidArgumentException.class, 
@@ -64,7 +64,7 @@ public class SqlExecutorProviderTest {
     }
 
     @Test()
-    public void testSqlException() throws SqlException, InvalidArgumentException {
+    void testSqlException() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
         SqlExecutor executor = sqlExecutorProvider.forSql("select from voyts");
         SqlException e = assertThrows(SqlException.class, 
@@ -73,7 +73,7 @@ public class SqlExecutorProviderTest {
     }
     
     @Test
-    public void testValidQueryWithParams() throws SqlException, InvalidArgumentException {
+    void testValidQueryWithParams() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
         sqlExecutorProvider.forSql("CREATE TABLE test4 (id INTEGER);").executeDDL();
         SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test4 (id) VALUES (:id)");
@@ -92,7 +92,7 @@ public class SqlExecutorProviderTest {
     }
 
     @Test()
-    public void testDDLException() {
+    void testDDLException() {
         assertNotNull(sqlExecutorProvider);
         SqlExecutor executor = sqlExecutorProvider.forSql("CREATE voyts;;");
         SqlException e = assertThrows(SqlException.class, 
@@ -101,7 +101,7 @@ public class SqlExecutorProviderTest {
     }
 
     @Test()
-    public void testQueryForString() throws SqlException, InvalidArgumentException {
+    void testQueryForString() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
         sqlExecutorProvider.forSql("CREATE TABLE test5 (id INTEGER, str text);").executeDDL();
         SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test5 (id, str) VALUES (:id, :str)");
@@ -112,6 +112,22 @@ public class SqlExecutorProviderTest {
         String str = executor.setParameter("id", 2).queryForString();
 
         assertEquals("str: 2", str);
+    }
+
+    @Test()
+    void testQueryForInt() throws SqlException, InvalidArgumentException {
+        assertNotNull(sqlExecutorProvider);
+        SqlExecutor executor = sqlExecutorProvider.forSql("select 1");
+        Integer id = executor.queryForInt();
+        assertEquals(1, id.intValue());
+    }
+
+    @Test()
+    void testQueryForBoolean() throws SqlException, InvalidArgumentException {
+        assertNotNull(sqlExecutorProvider);
+        SqlExecutor executor = sqlExecutorProvider.forSql("select 1 = 1");
+        Boolean b = executor.queryForBoolean();
+        assertTrue(b);
     }
 
 }
