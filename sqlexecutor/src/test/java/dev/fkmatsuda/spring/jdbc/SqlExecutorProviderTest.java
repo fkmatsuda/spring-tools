@@ -79,7 +79,7 @@ public class SqlExecutorProviderTest {
         for (int i = 0; i < 16; i++) {
             insertQuery.setParameter("id", i).update();
         }
-        SqlExecutor executor = sqlExecutorProvider.forSql("select * from test4 where id < :id_limit order by id");
+        SqlExecutor executor = sqlExecutorProvider.forSql("select * from test4 where id < :id_limit order by id offset 0 limit 4");
         executor.setParameter("id_limit", 4);
         Long cnt = executor.count();
         assertEquals(4, cnt.intValue());
