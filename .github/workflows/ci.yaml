@@ -36,4 +36,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=fkmatsuda_spring-tools_AYJ7PHGJY9AUnfpSp7V-
+        run: mvn -B clean build verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=fkmatsuda_spring-tools_AYJ7PHGJY9AUnfpSp7V-
