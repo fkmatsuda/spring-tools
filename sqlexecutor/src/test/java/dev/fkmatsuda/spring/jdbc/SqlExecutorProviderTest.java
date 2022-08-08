@@ -2,6 +2,7 @@ package dev.fkmatsuda.spring.jdbc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -137,6 +138,49 @@ public class SqlExecutorProviderTest {
         SqlExecutor executor = sqlExecutorProvider.forSql("select 1.1");
         BigDecimal b = executor.queryForBigDecimal();
         assertEquals(1.1, b.doubleValue(), 0.00001);
+    }
+
+    @Test()
+    void testQueryNullValues() throws SqlException, InvalidArgumentException {
+        assertNotNull(sqlExecutorProvider);
+        sqlExecutorProvider.forSql("CREATE TABLE test6 (" + 
+            "id INTEGER, str text, " + 
+            "b_value boolean, " + 
+            "i_value int4, " + 
+            "l_value int8, " +
+            "n_value numeric(15,5));").executeDDL();
+        SqlExecutor insertQuery = sqlExecutorProvider.forSql(
+            "INSERT INTO test6 (id) VALUES (:id)");
+        for (int i = 0; i < 16; i++) {
+            insertQuery.setParameter("id", i).update();
+        }
+
+        Long lValue = sqlExecutorProvider.forSql("select l_value from test6 where id = :id")
+            .setParameter("id", 1L).queryForLong();
+        assertNull(lValue);
+
+        BigDecimal nValue = sqlExecutorProvider.forSql("select n_value from test6 where id = :id")
+            .setParameter("id", 1L).queryForBigDecimal();
+        assertNull(nValue);
+
+        String strValue = sqlExecutorProvider.forSql("select str from test6 where id = :id")
+            .setParameter("id", 1L).queryForString();
+        assertNull(strValue);
+
+        Boolean bValue = sqlExecutorProvider.forSql("select b_value from test6 where id = :id")
+            .setParameter("id", 1L).queryForBoolean();
+        assertNull(bValue);
+
+        Integer iValue = sqlExecutorProvider.forSql("select i_value from test6 where id = :id")
+            .setParameter("id", 1L).queryForInt();
+        assertNull(iValue);
+
+        List<Long> lValues = sqlExecutorProvider.forSql("select l_value from test6").queryForLongList();
+        for (Long l : lValues) {
+            assertNull(l);
+        }
+
+
     }
 
 }
