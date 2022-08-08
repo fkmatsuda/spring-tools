@@ -24,7 +24,7 @@ public class SqlExecutorProviderTest {
     private SqlExecutorProvider sqlExecutorProvider;
 
     @Test
-    public void test() throws SqlException, InvalidArgumentException {
+    public void testValidQuery() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
         sqlExecutorProvider.forSql("CREATE TABLE test (id INTEGER);").executeDDL();
         SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test (id) VALUES (:id)");
@@ -46,11 +46,28 @@ public class SqlExecutorProviderTest {
     @Test()
     public void testFailedParameter() throws SqlException, InvalidArgumentException {
         assertNotNull(sqlExecutorProvider);
-        sqlExecutorProvider.forSql("CREATE TABLE test2 (id INTEGER);").executeDDL();
+        sqlExecutorProvider.forSql("CREATE TABLE test (id INTEGER);").executeDDL();
         SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test2 (id) VALUES (:id)");
         RequiredValueException e = assertThrows(RequiredValueException.class, 
         () -> insertQuery.update());
         assertEquals("Parameters is required for this operation", e.getMessage());
+    }
+
+    @Test()
+    public void testCountInvalidQuery() throws SqlException, InvalidArgumentException {
+        assertNotNull(sqlExecutorProvider);
+        SqlExecutor executor = sqlExecutorProvider.forSql("CREATE TABLE test (id INTEGER);");
+        InvalidArgumentException e = assertThrows(InvalidArgumentException.class, 
+        () -> executor.count());
+        assertEquals("Cannot count current query result", e.getMessage());
+    }
+
+    @Test()
+    public void testSqlException() throws SqlException, InvalidArgumentException {
+        assertNotNull(sqlExecutorProvider);
+        SqlExecutor executor = sqlExecutorProvider.forSql("select from voyts");
+        SqlException e = assertThrows(SqlException.class, 
+        () -> executor.update());
     }
     
 }

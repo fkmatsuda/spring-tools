@@ -139,7 +139,7 @@ public class SqlExecutorProvider {
 		public Long count() throws InvalidArgumentException {
 			Matcher countMatcher = QUERY_COUNT_PATTERN.matcher(sql);
 			if (!countMatcher.matches()) {
-				throw new InvalidArgumentException("Não é possível contar o resultado da query atual");
+				throw new InvalidArgumentException("Cannot count current query result");
 			}
 			String sqlCount = countMatcher.replaceAll("$1count(*)$3");
 			Matcher orderLimitMatcher = ORDER_LIMIT_PATTERN.matcher(sqlCount);
