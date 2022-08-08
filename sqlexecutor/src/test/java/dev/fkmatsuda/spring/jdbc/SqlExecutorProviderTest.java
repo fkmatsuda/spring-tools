@@ -70,4 +70,25 @@ public class SqlExecutorProviderTest {
         () -> executor.update());
     }
     
+    @Test
+    public void testValidQueryWithParams() throws SqlException, InvalidArgumentException {
+        assertNotNull(sqlExecutorProvider);
+        sqlExecutorProvider.forSql("CREATE TABLE test4 (id INTEGER);").executeDDL();
+        SqlExecutor insertQuery = sqlExecutorProvider.forSql("INSERT INTO test4 (id) VALUES (:id)");
+        for (int i = 0; i < 16; i++) {
+            insertQuery.setParameter("id", i).update();
+        }
+        SqlExecutor executor = sqlExecutorProvider.forSql("select * from test4 where id < :id_limit order by id");
+        executor.setParameter("id_limit", 4);
+        Long cnt = executor.count();
+        assertEquals(4, cnt.intValue());
+
+        List<Long> ids = executor.queryForLongList();
+
+        for (int i = 0; i < 4; i++) {
+            assertEquals(i, ids.get(i).intValue());
+        }
+
+    }
+
 }
