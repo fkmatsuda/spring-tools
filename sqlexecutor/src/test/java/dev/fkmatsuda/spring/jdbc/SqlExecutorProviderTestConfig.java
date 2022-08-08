@@ -12,7 +12,7 @@ public class SqlExecutorProviderTestConfig {
 
     @Bean(name = "dataSource")
     public DataSource dataSource() {
-        return new SimpleDriverDataSource(new org.hsqldb.jdbcDriver(), "jdbc:hsqldb:mem:testdb", "sa", "");
+        return new SimpleDriverDataSource(new org.hsqldb.jdbcDriver(), "jdbc:hsqldb:mem:testdb;sql.syntax_pgs=true", "sa", "");
     }
 
     @Bean(name = "sqlExecutorProvider")
