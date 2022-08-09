@@ -53,7 +53,7 @@ public class SqlExecutorProvider {
         private static final Pattern QUERY_COUNT_PATTERN = Pattern.compile("(^\\s*select\\s+)(.*?)(\\s+from\\s+.*)($)",
                 Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
         private static final Pattern ORDER_LIMIT_PATTERN = Pattern.compile(
-                "(^.*?)(\\s+order\\s+by\\s+|\\s+limit\\s+|\\s+offset\\s+)(.*)($)",
+                "(^.*?)((\\s+order\\s+by|\\s+limit\\s+)|(\\s+offset))(\\s+.*)($)",
                 Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
         private final String sql;
