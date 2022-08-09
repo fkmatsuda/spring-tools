@@ -22,7 +22,7 @@ import dev.fkmatsuda.spring.jdbc.SqlExecutorProvider.SqlExecutor;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { SqlExecutorProviderTestConfig.class })
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class SqlExecutorProviderTest {
+class SqlExecutorProviderTest {
 
     @Autowired
     private SqlExecutorProvider sqlExecutorProvider;
