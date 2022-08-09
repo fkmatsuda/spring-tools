@@ -12,11 +12,14 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-          server-id: ossrh
+          server-id: fkmatsuda.dev-oss
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
       - name: Publish package
-        run: mvn clean deploy -Dmaven.test.skip=true
+        run: |
+          mvn versions:set -DnewVersion=\${{GITHUB_REF#refs/tags/v}}
+          mvn versions:commit
+          mvn clean deploy -Dmaven.test.skip=true
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_TOKEN }}

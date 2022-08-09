@@ -21,8 +21,7 @@
 
 package dev.fkmatsuda.spring.jdbc;
 
-import lombok.Data;
-
+import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,79 +40,80 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
-@Data
+@AllArgsConstructor
 @Component
 public class SqlExecutorProvider {
 
     private final ApplicationContext context;
 
     public static class SqlExecutor {
-    	
-    	private static final Pattern QUERY_COUNT_PATTERN  = Pattern.compile("(^\\s*select\\s+)(.*?)(\\s+from\\s+.*?)($)", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE );
-    	private static final Pattern ORDER_LIMIT_PATTERN  = Pattern.compile("(^.*?)(\\s+order\\s+by\\s+|\\s+limit\\s+|\\s+offset\\s+)(.*?)($)", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE );
-        
+
+        private static final Pattern QUERY_COUNT_PATTERN = Pattern.compile("(^\\s*select\\s+)(.*?)(\\s+from\\s+.*)($)",
+                Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+        private static final Pattern ORDER_LIMIT_PATTERN = Pattern.compile(
+            "(^.*?)(?>(\\s+order\\s+by)|(\\s+limit)|(\\s+offset))(\\s+.*)($)",
+                Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+
         private final String sql;
         private final NamedParameterJdbcTemplate jdbcTemplate;
         private final SqlExecutorProvider provider;
         private final DataSource dataSource;
 
         private MapSqlParameterSource parameters = null;
-        
+
         public <P> SqlExecutor setParameter(String name, P value) {
-            
+
             if (Objects.isNull(parameters)) {
                 this.parameters = new MapSqlParameterSource(name, value);
             } else {
                 this.parameters.addValue(name, value);
             }
-            
+
             return this;
-            
+
         }
 
         public <R> List<R> query(RowMapper<R> rowMapper) {
-            if (Objects.nonNull(parameters)) {               
-                return  this.jdbcTemplate.query(sql, parameters, rowMapper);
+            if (Objects.nonNull(parameters)) {
+                return this.jdbcTemplate.query(sql, parameters, rowMapper);
             }
-            return  this.jdbcTemplate.query(sql, rowMapper);
+            return this.jdbcTemplate.query(sql, rowMapper);
         }
-                
+
         public <R> R query(ResultSetExtractor<R> extractor) {
-            if (Objects.nonNull(parameters)) {              
-                return  this.jdbcTemplate.query(sql, parameters, extractor);
+            if (Objects.nonNull(parameters)) {
+                return this.jdbcTemplate.query(sql, parameters, extractor);
             }
-            return  this.jdbcTemplate.query(sql, extractor);
+            return this.jdbcTemplate.query(sql, extractor);
         }
-        
+
         public void update() throws SqlException {
             checkParameters();
-            
+
             this.jdbcTemplate.update(sql, parameters);
         }
 
         public void executeDDL() throws SqlException {
-            
+
             try (Connection conn = this.dataSource.getConnection()) {
                 conn.setAutoCommit(true);
-                try(Statement st = conn.createStatement()) {
+                try (Statement st = conn.createStatement()) {
                     String[] ddlCommands = sql.split(";");
                     for (String ddlCommand : ddlCommands) {
-                        if (ddlCommand.trim().length() > 0) {
-                            st.execute(ddlCommand);
-                        }
+                        st.execute(ddlCommand);
                     }
                 }
             } catch (SQLException e) {
                 throw new SqlException(e);
             }
         }
-                
+
         private void checkParameters() throws RequiredValueException {
-            
+
             if (Objects.isNull(parameters)) {
                 throw new RequiredValueException("Parameters is required for this operation");
             }
-            
+
         }
 
         private SqlExecutor(SqlExecutorProvider provider, DataSource dataSource, String sql) {
@@ -125,48 +125,48 @@ public class SqlExecutorProvider {
         }
 
         public String queryForString() {
-            return query(ResultSetExtractorFactory.stringExtractor()) ;
+            return query(ResultSetExtractorFactory.stringExtractor());
         }
 
         public List<Long> queryForLongList() {
             return query(ResultSetExtractorFactory.longListMapper());
         }
 
-		public Long queryForLong() {
-            return query(ResultSetExtractorFactory.longExtractor()) ;
-		}
-		
-		public Long count() throws InvalidArgumentException {
-			Matcher countMatcher = QUERY_COUNT_PATTERN.matcher(sql);
-			if (!countMatcher.matches()) {
-				throw new InvalidArgumentException("Não é possível contar o resultado da query atual");
-			}
-			String sqlCount = countMatcher.replaceAll("$1count(*)$3");
-			Matcher orderLimitMatcher = ORDER_LIMIT_PATTERN.matcher(sqlCount);
-			if (orderLimitMatcher.matches()) {
-				sqlCount = orderLimitMatcher.replaceAll("$1$4");
-			}
-			SqlExecutor countExecutor = provider.forSql(sqlCount);
-			if (Objects.nonNull(parameters)) {				
-				countExecutor.parameters = new MapSqlParameterSource(parameters.getValues());
-			}
-			return countExecutor.queryForLong();
-		}
+        public Long queryForLong() {
+            return query(ResultSetExtractorFactory.longExtractor());
+        }
 
-		public BigDecimal queryForBigDecimal() {
-            return query(ResultSetExtractorFactory.bigDecimalExtractor()) ;
-		}
-		
-		public Boolean queryForBoolean() {
-			return query(ResultSetExtractorFactory.booleanExtractor()) ;
-		}
+        public Long count() throws InvalidArgumentException {
+            Matcher countMatcher = QUERY_COUNT_PATTERN.matcher(sql);
+            if (!countMatcher.matches()) {
+                throw new InvalidArgumentException("Cannot count current query result");
+            }
+            String sqlCount = countMatcher.replaceAll("$1count(*)$3");
+            Matcher orderLimitMatcher = ORDER_LIMIT_PATTERN.matcher(sqlCount);
+            if (orderLimitMatcher.matches()) {
+                sqlCount = orderLimitMatcher.replaceAll("$1$4");
+            }
+            SqlExecutor countExecutor = provider.forSql(sqlCount);
+            if (Objects.nonNull(parameters)) {
+                countExecutor.parameters = new MapSqlParameterSource(parameters.getValues());
+            }
+            return countExecutor.queryForLong();
+        }
 
-		public Integer queryForInt() {
-			return query(ResultSetExtractorFactory.integerExtractor()) ;
-		}
-            
+        public BigDecimal queryForBigDecimal() {
+            return query(ResultSetExtractorFactory.bigDecimalExtractor());
+        }
+
+        public Boolean queryForBoolean() {
+            return query(ResultSetExtractorFactory.booleanExtractor());
+        }
+
+        public Integer queryForInt() {
+            return query(ResultSetExtractorFactory.integerExtractor());
+        }
+
     }
-    
+
     public SqlExecutor forSql(String sql) {
         return new SqlExecutor(this, context.getBean(DataSource.class), sql);
     }
