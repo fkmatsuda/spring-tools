@@ -1,6 +1,7 @@
 package dev.fkmatsuda.spring.jdbc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -169,7 +170,7 @@ public class SqlExecutorProviderTest {
 
         Boolean bValue = sqlExecutorProvider.forSql("select b_value from test6 where id = :id")
             .setParameter("id", 1L).queryForBoolean();
-        assertNull(bValue);
+        assertFalse(bValue);
 
         Integer iValue = sqlExecutorProvider.forSql("select i_value from test6 where id = :id")
             .setParameter("id", 1L).queryForInt();

@@ -101,11 +101,11 @@ public class ResultSetExtractorFactory {
 				if (rs.next()) {
                 	Boolean value = rs.getBoolean(1);
                 	if (rs.wasNull()) {
-                		return null;
+                		return false;
                 	}
                     return value;
                 }
-				return null;
+				return false;
 			}
 			
 		};
