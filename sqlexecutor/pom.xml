@@ -92,7 +92,7 @@
         <repository>
             <id>fkmatsuda.dev-oss</id>
             <name>fkmatsuda OSS Repository</name>
-            <url>https://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss/</url>
+            <url>https://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss-release/</url>
         </repository>
     </distributionManagement>
     <build>
@@ -120,7 +120,7 @@
                 </executions>
                 <configuration>
                     <serverId>fkmatsuda.dev-oss</serverId>
-                    <nexusUrl>https://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss/</nexusUrl>
+                    <nexusUrl>https://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss-release/</nexusUrl>
                     <skipStaging>true</skipStaging>
                 </configuration>
             </plugin>
