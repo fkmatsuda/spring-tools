@@ -22,8 +22,6 @@
 package dev.fkmatsuda.spring.jdbc;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
