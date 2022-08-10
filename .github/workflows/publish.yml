@@ -20,8 +20,10 @@ jobs:
         run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
       - name: Publish package
         run: |
+          echo "${VERSION}"
           mvn versions:set -DnewVersion=$VERSION
           mvn versions:commit
+          mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.6.0:exec
           mvn clean deploy -Dmaven.test.skip=true
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
