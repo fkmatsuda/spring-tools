@@ -27,7 +27,7 @@
     <parent>
         <groupId>dev.fkmatsuda.spring</groupId>
         <artifactId>tools</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>sqlexecutor</artifactId>
@@ -92,7 +92,7 @@
         <repository>
             <id>fkmatsuda.dev-oss</id>
             <name>fkmatsuda OSS Repository</name>
-            <url>http://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss/</url>
+            <url>https://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss-release/</url>
         </repository>
     </distributionManagement>
     <build>
@@ -120,7 +120,7 @@
                 </executions>
                 <configuration>
                     <serverId>fkmatsuda.dev-oss</serverId>
-                    <nexusUrl>http://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss/</nexusUrl>
+                    <nexusUrl>https://repo.fkmatsuda.dev/repository/fkmatsuda.dev-oss-release/</nexusUrl>
                     <skipStaging>true</skipStaging>
                 </configuration>
             </plugin>

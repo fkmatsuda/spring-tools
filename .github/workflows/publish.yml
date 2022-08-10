@@ -17,8 +17,6 @@ jobs:
           server-password: MAVEN_PASSWORD
       - name: Publish package
         run: |
-          mvn versions:set -DnewVersion=\${{GITHUB_REF#refs/tags/v}}
-          mvn versions:commit
           mvn clean deploy -Dmaven.test.skip=true
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
