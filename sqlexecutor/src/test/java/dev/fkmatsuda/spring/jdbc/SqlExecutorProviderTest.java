@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -215,6 +218,23 @@ class SqlExecutorProviderTest {
 
         List<Long> lValues = sqlExecutorProvider.forSql("select l_value from test7").queryForLongList();
         assertTrue(lValues.isEmpty());
+    }
+
+    @Test()
+    void testLoadSql() throws SqlException, InvalidArgumentException, IOException {
+        assertNotNull(sqlExecutorProvider);
+        File testFile = new ClassPathResource("/testLoadSql.sql", this.getClass()).getFile();
+        sqlExecutorProvider.loadSql(testFile).executeDDL();
+        SqlExecutor insExecutor = sqlExecutorProvider.forSql("INSERT INTO testLoadSql (id) VALUES (:id)");
+        for (int i = 0; i < 16; i++) {
+            insExecutor.setParameter("id", i).update();
+        }
+        SqlExecutor executor = sqlExecutorProvider.forSql("select id from testLoadSql where id = :id");
+        for (int i = 0; i < 16; i++) {
+            Integer id = executor.setParameter("id", i).queryForInt();
+            assertEquals(i, id.intValue());
+        }
+
     }
 
 }

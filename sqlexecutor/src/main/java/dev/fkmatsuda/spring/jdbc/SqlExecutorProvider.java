@@ -22,7 +22,14 @@
 package dev.fkmatsuda.spring.jdbc;
 
 import lombok.AllArgsConstructor;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -40,6 +47,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import dev.fkmatsuda.spring.common.FileUtils;
+
 @AllArgsConstructor
 @Component
 public class SqlExecutorProvider {
@@ -51,7 +60,7 @@ public class SqlExecutorProvider {
         private static final Pattern QUERY_COUNT_PATTERN = Pattern.compile("(^\\s*select\\s+)(.*?)(\\s+from\\s+.*)($)",
                 Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
         private static final Pattern ORDER_LIMIT_PATTERN = Pattern.compile(
-            "(^.*?)(?>(\\s+order\\s+by)|(\\s+limit)|(\\s+offset))(\\s+.*)($)",
+                "(^.*?)(?>(\\s+order\\s+by)|(\\s+limit)|(\\s+offset))(\\s+.*)($)",
                 Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
         private final String sql;
@@ -100,6 +109,9 @@ public class SqlExecutorProvider {
                 try (Statement st = conn.createStatement()) {
                     String[] ddlCommands = sql.split(";");
                     for (String ddlCommand : ddlCommands) {
+                        if (ddlCommand.trim().isEmpty()) {
+                            continue;
+                        }
                         st.execute(ddlCommand);
                     }
                 }
@@ -169,6 +181,11 @@ public class SqlExecutorProvider {
 
     public SqlExecutor forSql(String sql) {
         return new SqlExecutor(this, context.getBean(DataSource.class), sql);
+    }
+
+    public SqlExecutor loadSql(File sqlFile) throws IOException {
+        String sql = FileUtils.readToString(sqlFile);
+        return forSql(sql);
     }
 
 }
